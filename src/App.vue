@@ -1,17 +1,39 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <router-view />
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import { onBeforeMount } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/store/auth";
+import { useQuasar } from "quasar";
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+  name: "App",
+  setup() {
+    const authStore = useAuthStore();
+    const $q = useQuasar();
+    const router = useRouter();
+
+    onBeforeMount(() => {
+      if (localStorage.getItem("user")) {
+        authStore
+          .getUser()
+          .then(() => {})
+          .catch((error) => {
+            if (error.status == 500) {
+              $q.notify({
+                message: "Your session has expired! please login again",
+                type: "negative",
+              });
+              router.push("/login");
+            } else if (error && error.data) $q.notify(error.data.message);
+          });
+      }
+    });
+  },
+};
 </script>
 
 <style>
@@ -19,8 +41,8 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+}
+router-link a{
+    text-decoration: none !important;
 }
 </style>
