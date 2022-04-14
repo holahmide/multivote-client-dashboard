@@ -10,7 +10,7 @@
             filled
             type="text"
             v-model="form.title"
-            label="Session Title"
+            label="Session Title *"
             name="title"
             lazy-rules
             :rules="[
@@ -24,7 +24,7 @@
             stack-label
             type="datetime-local"
             v-model="form.startDate"
-            label="Start Date"
+            label="Start Date *"
             name="startDate"
             lazy-rules
             :rules="[
@@ -39,7 +39,7 @@
             filled
             type="datetime-local"
             v-model="form.endDate"
-            label="End Date"
+            label="End Date *"
             name="endDate"
             lazy-rules
             :rules="[
@@ -55,29 +55,30 @@
             label="Session Description"
             name="title"
             lazy-rules
-            :rules="[
-              (val) =>
-                (val && val.length > 0) || 'The title field cannot be empty',
-            ]"
+          />
+          <q-img
+          v-if="form.logo_preview"
+            spinner-color="primary"
+            spinner-size="50px"
+            :src="form.logo_preview"
+            alt=""
+            width="550px"
+            height="500px"
           />
           <q-file
+            class="col-xm-10 col-sm-10 col-md-10 col-lg-10"
             filled
+            clearable
             bottom-slots
+            accept=".jpg, image/*"
             max-file-size="20480000"
             @rejected="onRejected"
             v-model="form.logo"
             label="Session Logo"
-            counter
+            @update:model-value="onImageSelect()"
           >
             <template v-slot:prepend>
-              <q-icon name="cloud_upload" @click.stop />
-            </template>
-            <template v-slot:append>
-              <q-icon
-                name="close"
-                @click.stop="model = null"
-                class="cursor-pointer"
-              />
+              <q-icon name="image" />
             </template>
 
             <template v-slot:hint> Upload a voting session logo </template>
@@ -94,13 +95,6 @@
         <div class="q-mt-md col-sm-10">
           <q-btn v-if="!loading" label="Submit" type="submit" color="primary" />
           <q-spinner-tail v-else color="primary" size="2em" />
-          <q-btn
-            label="Reset"
-            type="reset"
-            color="primary"
-            flat
-            class="q-ml-sm"
-          />
         </div>
       </q-form>
     </div>
@@ -129,6 +123,7 @@ export default {
       endDate: null,
       description: null,
       logo: null,
+      logo_preview: null,
     });
 
     const createSession = () => {
@@ -226,6 +221,14 @@ export default {
       categories.value = JSON.parse(JSON.stringify(categories));
     };
 
+    const onImageSelect = () => {
+      form.value.logo_preview = null; // clears preview when logo is cleared
+      if (form.value.logo) {
+        const image_url = URL.createObjectURL(form.value.logo);
+        form.value.logo_preview = image_url;
+      }
+    };
+
     return {
       form,
       createSession,
@@ -243,6 +246,7 @@ export default {
       confirmDeleteCategory,
       deleteCategory,
       updateCategories,
+      onImageSelect,
     };
   },
 };

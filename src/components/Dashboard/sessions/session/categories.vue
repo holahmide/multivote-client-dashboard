@@ -37,7 +37,13 @@
           <div v-if="categories.length > 0" class="q-pa-sm">
             <span
               class="q-pa-sm q-ma-xs q-mb-md bg-grey"
-              style="border-radius: 2px; display: inline-block; cursor: pointer"
+              style="
+                border-radius: 2px;
+                display: inline-block;
+                cursor: pointer;
+                padding: 7px;
+                margin: 6px;
+              "
               rounded
               v-for="(category, index) in categories"
               :key="index"
@@ -154,7 +160,11 @@ export default {
         name: newCategory.value.toUpperCase(),
         session: session.value,
       };
-      if (categories.value.findIndex((el) => el.name.toUpperCase() == item.name) > -1)
+      console.log(categories.value)
+      if (
+        categories.value.findIndex((el) => el.name.toUpperCase() == item.name) >
+        -1
+      )
         return $q.notify("Category already exists");
       if (props.session_is_new) {
         // If there is no need to send data to backend

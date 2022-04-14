@@ -44,9 +44,9 @@ const routes = [
         meta: { requiresAuth: true },
       },
       {
-        path: "settings",
-        name: "settings",
-        component: () => import("../components/Dashboard/index.vue"),
+        path: "profile",
+        name: "profile",
+        component: () => import("../components/Dashboard/profile.vue"),
         meta: { requiresAuth: true },
       },
     ],

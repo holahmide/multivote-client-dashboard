@@ -2,8 +2,8 @@
   <div style="width: 100%">
     <div class="text-h6 q-mb-sm">Edit Voting Session</div>
     <hr />
-    <div v-if="!loading">
-      <q-form style="" @submit="createSession">
+    <div v-if="!loading && !isFailed">
+      <q-form style="" class="q-mt-md"  @submit="createSession">
         <div class="row q-gutter-lg">
           <q-input
             class="col-xm-12 col-sm-10 col-md-4 col-lg-3"
@@ -21,8 +21,6 @@
           <q-input
             class="col-xm-12 col-sm-10 col-md-3 col-lg-3"
             filled
-            stack-label
-            type="datetime-local"
             v-model="form.startDate"
             label="Start Date"
             name="startDate"
@@ -32,12 +30,45 @@
                 (val && val.length > 0) ||
                 'The start date field cannot be empty',
             ]"
-          />
+          >
+            <template v-slot:prepend>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date v-model="form.startDate" mask="YYYY-MM-DD HH:mm">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+            <template v-slot:append>
+              <q-icon name="access_time" class="cursor-pointer">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-time
+                    v-model="form.startDate"
+                    mask="YYYY-MM-DD HH:mm"
+                    format24h
+                  >
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-time>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
           <q-input
-            stack-label
             class="col-xm-12 col-sm-10 col-md-3 col-lg-3"
             filled
-            type="datetime-local"
             v-model="form.endDate"
             label="End Date"
             name="endDate"
@@ -46,7 +77,42 @@
               (val) =>
                 (val && val.length > 0) || 'The end date field cannot be empty',
             ]"
-          />
+          >
+            <template v-slot:prepend>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-date v-model="form.endDate" mask="YYYY-MM-DD HH:mm">
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+            <template v-slot:append>
+              <q-icon name="access_time" class="cursor-pointer">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <q-time
+                    v-model="form.endDate"
+                    mask="YYYY-MM-DD HH:mm"
+                    format24h
+                  >
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </q-time>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
           <q-input
             class="col-xm-10 col-sm-10 col-md-10 col-lg-10"
             filled
@@ -60,47 +126,62 @@
                 (val && val.length > 0) || 'The title field cannot be empty',
             ]"
           />
+          <q-img
+            v-if="form.logo_preview"
+            spinner-color="primary"
+            spinner-size="50px"
+            :src="form.logo_preview"
+            alt=""
+            width="250px"
+            height="150px"
+          />
           <q-file
+            class="col-xm-10 col-sm-10 col-md-10 col-lg-10"
             filled
+            clearable
             bottom-slots
+            accept=".jpg, image/*"
             max-file-size="20480000"
             @rejected="onRejected"
             v-model="form.logo"
-            label="Session Logo"
-            counter
+            label="Click to Update Session Logo"
+            @update:model-value="onImageSelect()"
           >
             <template v-slot:prepend>
-              <q-icon name="cloud_upload" @click.stop />
-            </template>
-            <template v-slot:append>
-              <q-icon
-                name="close"
-                @click.stop="model = null"
-                class="cursor-pointer"
-              />
+              <q-icon name="image" />
             </template>
 
             <template v-slot:hint> Upload a voting session logo </template>
           </q-file>
         </div>
-        <div class="q-mt-md col-sm-10">
-          <q-btn v-if="!loading" label="Update" type="submit" color="primary" />
-          <q-spinner-tail v-else color="primary" size="2em" />
+        <div class="q-mt-md">
           <q-btn
-            label="Reset"
-            type="reset"
+            label="Update"
             color="primary"
-            flat
-            class="q-ml-sm"
-          />
+            @click="updateSession()"
+            :disabled="isUpdating"
+            :loading="isUpdating"
+            ><template v-slot:loading>
+              <q-spinner-tail class="on-left" /> </template
+          ></q-btn>
         </div>
       </q-form>
       <hr />
 
-      <Categories @update-categories="updateCategories($event, argz)" :categories="categories" :session="session.id" :session_is_new="false"/>
+      <Categories
+        @update-categories="updateCategories($event, argz)"
+        :categories="categories"
+        :session="session ? session.id : null"
+        :session_is_new="false"
+      />
       <hr />
 
-      <Nominees :nominees="nominees" :sn="s_n" :categories="categories"/>
+      <Nominees :nominees="nominees" :sn="s_n" :categories="categories" />
+    </div>
+    <div v-else-if="isFailed">
+      <div class="align-item-center">
+        {{ error.message }} for <b>{{ params.slug }} </b>
+      </div>
     </div>
     <div v-else>
       <q-inner-loading :showing="loading">
@@ -111,31 +192,35 @@
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { ref, watch, inject } from "vue";
 import { useQuery, useResult } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { useSessionStore } from "@/store/session/index";
 import { useQuasar } from "quasar";
 import { useRouter, useRoute } from "vue-router";
-import Nominees from './nominees';
-import Categories from './categories';
+import Nominees from "./nominees";
+import Categories from "./categories";
 export default {
   components: {
     Nominees,
-    Categories
+    Categories,
   },
+
   setup() {
+    const moment = inject("moment");
     const router = useRouter();
     const { params } = useRoute();
     const $q = useQuasar();
     const sessionStore = useSessionStore();
+    const isUpdating = ref(false);
+    const isFailed = ref(false);
 
     // Children variables
     const nominees = ref([]);
     const s_n = ref(1);
     const categories = ref([]);
 
-    const { result, loading } = useQuery(
+    const { result, loading, error } = useQuery(
       gql`
         query getSession($slug: String) {
           sessionBySlug(slug: $slug) {
@@ -153,6 +238,7 @@ export default {
             nominees {
               id
               name
+              votes
               category {
                 id
                 name
@@ -169,12 +255,15 @@ export default {
     const session = useResult(result, null, (data) => data.sessionBySlug);
 
     watch(session, (value) => {
+      if (!session) return;
       form.value = {
         ...form.value,
         ...value,
       };
-      form.value.startDate = new Date(form.value.startDate);
-      form.value.startDate = form.value.startDate.toISOString().split("T")[0];
+      // format dates (startDate and endDate)
+      form.value.startDate = moment(form.value.startDate, "YYYY-MM-DD HH:mm");
+      form.value.endDate = moment(form.value.endDate, "YYYY-MM-DD HH:mm");
+      form.value.logo_preview = form.value.logo;
       categories.value = JSON.parse(JSON.stringify(value.categories));
       value.nominees.map((nominee) => {
         nominees.value.push({
@@ -186,6 +275,16 @@ export default {
         });
         s_n.value++;
       });
+    });
+
+    watch(error, (value) => {
+      if (value) {
+        isFailed.value = true;
+        $q.notify({
+          message: error.value.message,
+          type: "negative",
+        });
+      }
     });
 
     const form = ref({
@@ -220,6 +319,39 @@ export default {
         });
     };
 
+    const updateSession = () => {
+      isUpdating.value = true;
+      let sessionValue = Object.assign({}, form.value);
+      console.log(form.value);
+      var formData = new FormData();
+      if (sessionValue.logo && typeof sessionValue.logo != "string") {
+        formData.append(`logo`, sessionValue.logo);
+      }
+      delete sessionValue.logo; // Remove logo object from session object
+      const neededKeys = ["title", "startDate", "endDate", "description"];
+      neededKeys.forEach((key) => {
+        formData.append(key, sessionValue[key]);
+      });
+      sessionStore
+        .update(sessionValue.id, formData)
+        .then(() => {
+          $q.notify({
+            message: "Successfully updated session!",
+            type: "positive",
+          });
+          // session.value.logo = data.updatedSession.logo;
+        })
+        .catch(() => {
+          $q.notify({
+            message: "Couldn't update the nominee! Try again",
+            type: "negative",
+          });
+        })
+        .finally(() => {
+          isUpdating.value = false;
+        });
+    };
+
     const onRejected = () => {
       $q.notify({
         message:
@@ -228,18 +360,29 @@ export default {
       });
     };
 
-
-
+    const onImageSelect = () => {
+      form.value.logo_preview = null; // clears preview when logo is cleared
+      if (form.value.logo) {
+        const image_url = URL.createObjectURL(form.value.logo);
+        form.value.logo_preview = image_url;
+      }
+    };
 
     return {
+      isFailed,
+      error,
+      params,
       session,
       form,
       createSession,
+      updateSession,
+      isUpdating,
       loading,
       onRejected,
       nominees,
       s_n,
       categories,
+      onImageSelect,
     };
   },
 };

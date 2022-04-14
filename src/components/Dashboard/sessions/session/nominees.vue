@@ -76,18 +76,27 @@
                 />
               </div>
             </q-td>
+            <q-td key="votes" :props="props">
+              <div>{{ props.row.votes }}</div>
+            </q-td>
             <q-td key="action" :props="props">
-              <q-btn
+              <q-btn v-if="!props.row.is_new"
                 :disabled="props.row.is_new"
                 label="Update"
                 color="primary"
                 class="q-mr-md"
                 @click="editNominee(props.row.s_n)"
               />
-              <q-btn
+              <q-btn v-if="!props.row.is_new"
                 label="Delete"
                 color="secondary"
                 @click="confirmDeleteNominee(props.row.s_n)"
+              />
+              <q-btn v-if="props.row.is_new"
+                label="Save All"
+                color="primary"
+                class="q-mr-md"
+                @click="saveAddedNominees"
               />
             </q-td>
           </q-tr>
@@ -191,7 +200,7 @@
                 max-file-size="20480000"
                 @rejected="onRejected"
                 v-model="editNomineeData.picture"
-                label="Nominee Logo"
+                label="Nominee Picture"
                 @update:model-value="onUpdateImageSelect()"
               >
                 <template v-slot:prepend>
@@ -307,6 +316,7 @@ export default {
       },
       { name: "picture", label: "Picture", field: "picture" },
       { name: "picture_preview", label: "Preview", field: "picture_preview" },
+      { name: "votes", label: "Votes", field: "votes" },
       { name: "action", label: "Action", field: "action" },
     ];
     const nomineeField = {
@@ -323,7 +333,7 @@ export default {
     const addNomineesField = () => {
       for (let i = 0; i < addNomineesFieldNumber.value; i++) {
         nominees.value.unshift(
-          JSON.parse(JSON.stringify({ ...nomineeField, s_n: s_n.value }))
+          Object.assign({}, { ...nomineeField, s_n: s_n.value })
         );
         s_n.value++;
       }
@@ -364,9 +374,9 @@ export default {
         if (nominee.is_new) {
           formData.append(`image-${nominee.s_n}`, nominee.picture);
         }
-
         delete nominee.picture;
       });
+      console.log(nomineesArray[0].picture)
       formData.append("nominees", JSON.stringify(nomineesArray));
       nomineeStore
         .createMultiple(formData)

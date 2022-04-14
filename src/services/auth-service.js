@@ -2,7 +2,7 @@ import api from '@/services/api'
 
 export default {
     register(credentials) {
-        return api.post('auth/register', credentials)
+        return api.post('user/register', credentials)
     },
     login(credentials) {
         return api.post(`auth/login`, credentials).then(response => {
@@ -20,8 +20,12 @@ export default {
         return api.get('auth/logout')
     },
 
-    update (credentials, id) {
-        return api.put(`auth/update/${id}`, credentials)
+    update (credentials) {
+        return api.put(`user/update`, credentials)
+    },
+
+    change_password (credentials) {
+        return api.post(`user/change-password`, credentials)
     },
 
     get_roles_and_permissions () {

@@ -106,7 +106,7 @@
             </q-item>
           </router-link>
 
-          <router-link
+          <!-- <router-link
             style="text-decoration: none; color: inherit"
             :to="{ name: 'sessions' }"
             v-slot="{ isActive }"
@@ -123,11 +123,11 @@
 
               <q-item-section> History </q-item-section>
             </q-item>
-          </router-link>
+          </router-link> -->
 
           <router-link
             style="text-decoration: none; color: inherit"
-            :to="{ name: 'settings' }"
+            :to="{ name: 'profile' }"
             v-slot="{ isExactActive }"
           >
             <q-item
@@ -137,10 +137,10 @@
               v-ripple
             >
               <q-item-section avatar>
-                <q-icon name="settings" />
+                <q-icon name="person" />
               </q-item-section>
 
-              <q-item-section> Settings </q-item-section>
+              <q-item-section> Profile </q-item-section>
             </q-item>
           </router-link>
         </q-list>
