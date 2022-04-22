@@ -10,7 +10,10 @@
         v-for="(session, index) in result.sessions"
         :key="index"
       >
-        <router-link :to="{ name: 'session', params: { slug: session.slug } }" style="text-decoration: none; color: inherit">
+        <router-link
+          :to="{ name: 'session', params: { slug: session.slug } }"
+          style="text-decoration: none; color: inherit"
+        >
           <div>
             <q-img
               :src="session.logo ? session.logo : '@/assets/multivote.png'"
@@ -24,7 +27,11 @@
               Title: <em class="text-primary">{{ session.title }}</em>
             </div>
             <div class="">Created: {{ $moment(session.createdAt) }}</div>
-            <div class="">Status: {{ session.isActive }}</div>
+            <div class="font-bold">
+              Status:
+              <span v-if="session.isActive" class="text-green">Active</span>
+              <span class="text-grey" v-else>Inactive </span>
+            </div>
           </div>
         </router-link>
       </div>
@@ -60,7 +67,8 @@ export default {
       loading,
     };
   },
-};"2019-02-22 21:02"
+};
+("2019-02-22 21:02");
 </script>
 
 <style lang="scss" scoped>

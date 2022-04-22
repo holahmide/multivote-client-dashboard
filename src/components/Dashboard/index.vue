@@ -49,7 +49,7 @@
         "
       >
         <q-list padding class="text-white">
-          <router-link
+          <!-- <router-link
             style="text-decoration: none; color: inherit"
             :to="{ name: 'dashboard_view' }"
             v-slot="{ isExactActive }"
@@ -66,7 +66,7 @@
 
               <q-item-section> Dashboard </q-item-section>
             </q-item>
-          </router-link>
+          </router-link> -->
 
           <router-link
             style="text-decoration: none; color: inherit"
@@ -165,7 +165,9 @@
 
     <q-page-container>
       <div class="q-pa-md">
-        <router-view />
+        <keep-alive>
+          <router-view />
+        </keep-alive>
       </div>
     </q-page-container>
   </q-layout>

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="">
-      <div class="text-h6">Add nominees</div>
+    <div class="q-px-md">
+      <div class="text-h6">Nominees (Add & Edit)</div>
 
       <q-table
         no-data-label="No nominee has been added"

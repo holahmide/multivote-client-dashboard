@@ -3,86 +3,97 @@
     <div class="text-h6 q-mb-sm">Create a Voting Session</div>
     <hr />
     <div>
-      <q-form style="" @submit="createSession">
-        <div class="row q-gutter-lg">
-          <q-input
-            class="col-xm-12 col-sm-10 col-md-4 col-lg-3"
-            filled
-            type="text"
-            v-model="form.title"
-            label="Session Title *"
-            name="title"
-            lazy-rules
-            :rules="[
-              (val) =>
-                (val && val.length > 0) || 'The title field cannot be empty',
-            ]"
-          />
-          <q-input
-            class="col-xm-12 col-sm-10 col-md-3 col-lg-3"
-            filled
-            stack-label
-            type="datetime-local"
-            v-model="form.startDate"
-            label="Start Date *"
-            name="startDate"
-            lazy-rules
-            :rules="[
-              (val) =>
-                (val && val.length > 0) ||
-                'The start date field cannot be empty',
-            ]"
-          />
-          <q-input
-            stack-label
-            class="col-xm-12 col-sm-10 col-md-3 col-lg-3"
-            filled
-            type="datetime-local"
-            v-model="form.endDate"
-            label="End Date *"
-            name="endDate"
-            lazy-rules
-            :rules="[
-              (val) =>
-                (val && val.length > 0) || 'The end date field cannot be empty',
-            ]"
-          />
-          <q-input
-            class="col-xm-10 col-sm-10 col-md-10 col-lg-10"
-            filled
-            type="textarea"
-            v-model="form.description"
-            label="Session Description"
-            name="title"
-            lazy-rules
-          />
-          <q-img
-          v-if="form.logo_preview"
-            spinner-color="primary"
-            spinner-size="50px"
-            :src="form.logo_preview"
-            alt=""
-            width="550px"
-            height="500px"
-          />
-          <q-file
-            class="col-xm-10 col-sm-10 col-md-10 col-lg-10"
-            filled
-            clearable
-            bottom-slots
-            accept=".jpg, image/*"
-            max-file-size="20480000"
-            @rejected="onRejected"
-            v-model="form.logo"
-            label="Session Logo"
-            @update:model-value="onImageSelect()"
-          >
-            <template v-slot:prepend>
-              <q-icon name="image" />
-            </template>
+      <q-form
+        style="width: 100%"
+        @submit="createSession"
+        @validation-error="showValidationError"
+      >
+        <div class="full-width row">
+          <div class="col-12 col-sm-6 col-md-4 col-lg-4 q-px-md">
+            <q-input
+              filled
+              type="text"
+              v-model="form.title"
+              label="Session Title *"
+              name="title"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) || 'The title field cannot be empty',
+              ]"
+            />
+          </div>
 
-            <template v-slot:hint> Upload a voting session logo </template>
-          </q-file>
+          <div class="col-12 col-sm-6 col-md-4 col-lg-4 q-px-md">
+            <q-input
+              filled
+              stack-label
+              type="datetime-local"
+              v-model="form.startDate"
+              label="Start Date *"
+              name="startDate"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'The start date field cannot be empty',
+              ]"
+            />
+          </div>
+          <div class="col-12 col-sm-6 col-md-4 col-lg-4 q-px-md">
+            <q-input
+              stack-label
+              filled
+              type="datetime-local"
+              v-model="form.endDate"
+              label="End Date *"
+              name="endDate"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'The end date field cannot be empty',
+              ]"
+            />
+          </div>
+          <div class="col-12 q-px-md">
+            <q-input
+              filled
+              type="textarea"
+              v-model="form.description"
+              label="Session Description"
+              name="title"
+              lazy-rules
+            />
+          </div>
+          <div class="col-12 q-pa-md">
+            <q-img
+              v-if="form.logo_preview"
+              spinner-color="primary"
+              spinner-size="50px"
+              :src="form.logo_preview"
+              alt=""
+            />
+          </div>
+          <div class="col-xm-10 col-sm-10 col-md-12 col-lg-12 q-px-md">
+            <q-file
+              filled
+              clearable
+              bottom-slots
+              accept=".jpg, image/*"
+              max-file-size="20480000"
+              @rejected="onRejected"
+              v-model="form.logo"
+              label="Session Logo"
+              @update:model-value="onImageSelect()"
+            >
+              <template v-slot:prepend>
+                <q-icon name="image" />
+              </template>
+
+              <template v-slot:hint> Upload a voting session logo </template>
+            </q-file>
+          </div>
         </div>
         <hr />
 
@@ -92,9 +103,17 @@
           :session_is_new="true"
         />
 
-        <div class="q-mt-md col-sm-10">
-          <q-btn v-if="!loading" label="Submit" type="submit" color="primary" />
-          <q-spinner-tail v-else color="primary" size="2em" />
+        <div class="row">
+          <div class="q-mt-md col-sm-12 q-pa-md">
+            <q-btn
+              v-if="!loading"
+              label="Submit"
+              type="submit"
+              color="primary"
+              style="width: 100%"
+            />
+            <q-spinner-tail v-else color="primary" size="2em" />
+          </div>
         </div>
       </q-form>
     </div>
@@ -229,8 +248,16 @@ export default {
       }
     };
 
+    const showValidationError = () => {
+      $q.notify({
+        message: "Validation Error: Ensure all the required fields have been filled",
+        type: "negative",
+      });
+    };
+
     return {
       form,
+      showValidationError,
       createSession,
       loading,
       onRejected,

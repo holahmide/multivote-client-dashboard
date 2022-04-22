@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="">
-      <div class="text-h6">Add categories</div>
+    <div class="q-px-md">
+      <div class="text-h6">Categories (Add & Edit)</div>
       <div class="text-body2">
         Create categories for your voting session e.g
         <code>Best in sports</code>
@@ -160,7 +160,6 @@ export default {
         name: newCategory.value.toUpperCase(),
         session: session.value,
       };
-      console.log(categories.value)
       if (
         categories.value.findIndex((el) => el.name.toUpperCase() == item.name) >
         -1

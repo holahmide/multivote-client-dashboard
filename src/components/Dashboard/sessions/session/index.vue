@@ -3,167 +3,199 @@
     <div class="text-h6 q-mb-sm">Edit Voting Session</div>
     <hr />
     <div v-if="!loading && !isFailed">
-      <q-form style="" class="q-mt-md"  @submit="createSession">
-        <div class="row q-gutter-lg">
-          <q-input
-            class="col-xm-12 col-sm-10 col-md-4 col-lg-3"
-            filled
-            type="text"
-            v-model="form.title"
-            label="Session Title"
-            name="title"
-            lazy-rules
-            :rules="[
-              (val) =>
-                (val && val.length > 0) || 'The title field cannot be empty',
-            ]"
-          />
-          <q-input
-            class="col-xm-12 col-sm-10 col-md-3 col-lg-3"
-            filled
-            v-model="form.startDate"
-            label="Start Date"
-            name="startDate"
-            lazy-rules
-            :rules="[
-              (val) =>
-                (val && val.length > 0) ||
-                'The start date field cannot be empty',
-            ]"
-          >
-            <template v-slot:prepend>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-date v-model="form.startDate" mask="YYYY-MM-DD HH:mm">
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-            <template v-slot:append>
-              <q-icon name="access_time" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-time
-                    v-model="form.startDate"
-                    mask="YYYY-MM-DD HH:mm"
-                    format24h
+      <q-form style="" class="q-mt-md" @submit="createSession">
+        <div class="row">
+          <div class="col-12 col-sm-6 col-md-4 col-lg-4 q-px-md">
+            <q-input
+              filled
+              type="text"
+              v-model="form.title"
+              label="Session Title"
+              name="title"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) || 'The title field cannot be empty',
+              ]"
+            />
+          </div>
+          <div class="col-12 col-sm-6 col-md-4 col-lg-4 q-px-md">
+            <q-input
+              filled
+              v-model="form.startDate"
+              label="Start Date"
+              name="startDate"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'The start date field cannot be empty',
+              ]"
+            >
+              <template v-slot:prepend>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy
+                    cover
+                    transition-show="scale"
+                    transition-hide="scale"
                   >
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-time>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
-          <q-input
-            class="col-xm-12 col-sm-10 col-md-3 col-lg-3"
-            filled
-            v-model="form.endDate"
-            label="End Date"
-            name="endDate"
-            lazy-rules
-            :rules="[
-              (val) =>
-                (val && val.length > 0) || 'The end date field cannot be empty',
-            ]"
-          >
-            <template v-slot:prepend>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-date v-model="form.endDate" mask="YYYY-MM-DD HH:mm">
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-            <template v-slot:append>
-              <q-icon name="access_time" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-time
-                    v-model="form.endDate"
-                    mask="YYYY-MM-DD HH:mm"
-                    format24h
+                    <q-date v-model="form.startDate" mask="YYYY-MM-DD HH:mm">
+                      <div class="row items-center justify-end">
+                        <q-btn
+                          v-close-popup
+                          label="Close"
+                          color="primary"
+                          flat
+                        />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+              <template v-slot:append>
+                <q-icon name="access_time" class="cursor-pointer">
+                  <q-popup-proxy
+                    cover
+                    transition-show="scale"
+                    transition-hide="scale"
                   >
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-time>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
-          <q-input
-            class="col-xm-10 col-sm-10 col-md-10 col-lg-10"
-            filled
-            type="textarea"
-            v-model="form.description"
-            label="Session Description"
-            name="title"
-            lazy-rules
-            :rules="[
-              (val) =>
-                (val && val.length > 0) || 'The title field cannot be empty',
-            ]"
-          />
-          <q-img
-            v-if="form.logo_preview"
-            spinner-color="primary"
-            spinner-size="50px"
-            :src="form.logo_preview"
-            alt=""
-            width="250px"
-            height="150px"
-          />
-          <q-file
-            class="col-xm-10 col-sm-10 col-md-10 col-lg-10"
-            filled
-            clearable
-            bottom-slots
-            accept=".jpg, image/*"
-            max-file-size="20480000"
-            @rejected="onRejected"
-            v-model="form.logo"
-            label="Click to Update Session Logo"
-            @update:model-value="onImageSelect()"
-          >
-            <template v-slot:prepend>
-              <q-icon name="image" />
-            </template>
+                    <q-time
+                      v-model="form.startDate"
+                      mask="YYYY-MM-DD HH:mm"
+                      format24h
+                    >
+                      <div class="row items-center justify-end">
+                        <q-btn
+                          v-close-popup
+                          label="Close"
+                          color="primary"
+                          flat
+                        />
+                      </div>
+                    </q-time>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+          <div class="col-12 col-sm-6 col-md-4 col-lg-4 q-px-md">
+            <q-input
+              filled
+              v-model="form.endDate"
+              label="End Date"
+              name="endDate"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'The end date field cannot be empty',
+              ]"
+            >
+              <template v-slot:prepend>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy
+                    cover
+                    transition-show="scale"
+                    transition-hide="scale"
+                  >
+                    <q-date v-model="form.endDate" mask="YYYY-MM-DD HH:mm">
+                      <div class="row items-center justify-end">
+                        <q-btn
+                          v-close-popup
+                          label="Close"
+                          color="primary"
+                          flat
+                        />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+              <template v-slot:append>
+                <q-icon name="access_time" class="cursor-pointer">
+                  <q-popup-proxy
+                    cover
+                    transition-show="scale"
+                    transition-hide="scale"
+                  >
+                    <q-time
+                      v-model="form.endDate"
+                      mask="YYYY-MM-DD HH:mm"
+                      format24h
+                    >
+                      <div class="row items-center justify-end">
+                        <q-btn
+                          v-close-popup
+                          label="Close"
+                          color="primary"
+                          flat
+                        />
+                      </div>
+                    </q-time>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+          <div class="col-12 q-px-md">
+            <q-input
+              filled
+              type="textarea"
+              v-model="form.description"
+              label="Session Description"
+              name="title"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) || 'The title field cannot be empty',
+              ]"
+            />
+          </div>
 
-            <template v-slot:hint> Upload a voting session logo </template>
-          </q-file>
+          <div v-if="form.logo_preview" class="col-12 q-pa-md">
+            <q-img
+              spinner-color="primary"
+              spinner-size="50px"
+              :src="form.logo_preview"
+              alt=""
+              width="250px"
+              height="150px"
+            />
+          </div>
+          <div class="col-xm-10 col-sm-10 col-md-12 col-lg-12 q-px-md">
+            <q-file
+              class="col-xm-10 col-sm-10 col-md-10 col-lg-10"
+              filled
+              clearable
+              bottom-slots
+              accept=".jpg, image/*"
+              max-file-size="20480000"
+              @rejected="onRejected"
+              v-model="form.logo"
+              label="Click to Update Session Logo"
+              @update:model-value="onImageSelect()"
+            >
+              <template v-slot:prepend>
+                <q-icon name="image" />
+              </template>
+
+              <template v-slot:hint> Upload a voting session logo </template>
+            </q-file>
+          </div>
         </div>
-        <div class="q-mt-md">
-          <q-btn
-            label="Update"
-            color="primary"
-            @click="updateSession()"
-            :disabled="isUpdating"
-            :loading="isUpdating"
-            ><template v-slot:loading>
-              <q-spinner-tail class="on-left" /> </template
-          ></q-btn>
+        <div class="row">
+          <div class="q-mt-md col-sm-12 q-pa-md">
+            <q-btn
+             style="width:100%;"
+              label="Update"
+              color="primary"
+              @click="updateSession()"
+              :disabled="isUpdating"
+              :loading="isUpdating"
+              ><template v-slot:loading>
+                <q-spinner-tail class="on-left" /> </template
+            ></q-btn>
+          </div>
         </div>
       </q-form>
       <hr />

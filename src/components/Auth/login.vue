@@ -145,6 +145,7 @@ export default {
           }
         })
         .catch((error) => {
+          console.log(error)
           $q.notify({
             message: error.data.message,
             type: "negative",
