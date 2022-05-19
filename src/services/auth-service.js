@@ -2,10 +2,10 @@ import api from '@/services/api'
 
 export default {
     register(credentials) {
-        return api.post('user/register', credentials)
+        return api.post('user/super/register', credentials)
     },
     login(credentials) {
-        return api.post(`auth/login`, credentials).then(response => {
+        return api.post(`auth/super/login`, credentials).then(response => {
             if (response.data.accessToken) {
               localStorage.setItem('user', JSON.stringify(response.data));
             }
@@ -14,10 +14,10 @@ export default {
           });
     },
     getUser () {
-        return api.get('auth/status')
+        return api.get('auth/super/status')
     },
     logout() {
-        return api.get('auth/logout')
+        return api.get('auth/super/logout')
     },
 
     update (credentials) {

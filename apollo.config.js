@@ -3,7 +3,7 @@ module.exports = {
     service: {
       name: "multivote-client",
       // URL to the GraphQL API
-      url: "http://127.0.0.1:3000/graphql",
+      url: "http://127.0.0.1:8000/graphql",
     },
     // Files processed by the extension
     includes: ["src/**/*.vue", "src/**/*.js"],

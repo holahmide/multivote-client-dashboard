@@ -21,14 +21,16 @@ export default {
         authStore
           .getUser()
           .then(() => {})
-          .catch((error) => {
-            if (error.status == 500) {
+          .catch(() => {
+            // if (error.status == 500) {
               $q.notify({
                 message: "Your session has expired! please login again",
                 type: "negative",
               });
-              router.push("/login");
-            } else if (error && error.data) $q.notify(error.data.message);
+              authStore.logout().then(() => {
+                router.push("/login");
+              })
+            // } else if (error && error.data) $q.notify(error.data.message);
           });
       }
     });

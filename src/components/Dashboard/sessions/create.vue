@@ -137,12 +137,12 @@ export default {
 
     const loading = ref(false);
     const form = ref({
-      title: null,
+      title: '',
       startDate: null,
       endDate: null,
-      description: null,
-      logo: null,
-      logo_preview: null,
+      description: '',
+      logo: '',
+      logo_preview: '',
     });
 
     const createSession = () => {

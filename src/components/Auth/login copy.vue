@@ -126,8 +126,8 @@ export default {
     const $q = useQuasar();
     const authStore = useAuthStore();
 
-    const email = ref("adeniyi.olamide@lmu.edu.ng");
-    const password = ref("VZCd0Y4yxZtruKL1lUkM6XZ7");
+    const email = ref("olami02bj@gmail.com");
+    const password = ref("Olamiposi2005");
     const passwordVisibility = ref(false);
     const loading = ref(false);
 

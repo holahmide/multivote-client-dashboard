@@ -1,13 +1,13 @@
 <template>
   <div>
     <div
-      class="row justify-center wrap content-center"
+      class="row justify-center wrap items-center"
       style="man-width: 100vw; min-height: 100vh"
     >
-      <div class="gt-xs col-md-6 col-xs-12 row justify-center">
+      <div class="q-mt-md gt-xs col-md-6 col-xs-12 row justify-center">
         <img
           id="login-svg"
-          src="@/assets/login.svg"
+          src="@/assets/register.svg"
           alt="Login SVG"
           style=""
           class="inline"
@@ -21,7 +21,7 @@
             alt=""
           />
           <br />
-          <div class="text-h6 text-grey-8">Sign In to vote and host polls</div>
+          <div class="text-h6 text-grey-8">Sign up to vote and host polls</div>
           <q-form
             style="max-width: 500px"
             @submit="onSubmit"
@@ -30,8 +30,38 @@
             <q-input
               class="col-xs-12 col-sm-12 col-md-12"
               filled
+              type="text"
+              v-model="form.firstName"
+              label="Your Firstname"
+              name="email"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'The firstname field cannot be empty',
+              ]"
+            />
+            <br />
+            <q-input
+              class="col-xs-12 col-sm-12 col-md-12"
+              filled
+              type="text"
+              v-model="form.lastName"
+              label="Your Lastname"
+              name="email"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'The lastname field cannot be empty',
+              ]"
+            />
+            <br />
+            <q-input
+              class="col-xs-12 col-sm-12 col-md-12"
+              filled
               type="email"
-              v-model="email"
+              v-model="form.email"
               label="Your Email"
               name="email"
               lazy-rules
@@ -45,8 +75,8 @@
               class="col-xs-12 col-sm-12 col-md-12"
               filled
               :type="passwordVisibility ? 'text' : 'password'"
-              v-model="password"
-              label="Your Password"
+              v-model="form.password"
+              label="Password"
               name="password"
               lazy-rules
               :rules="[
@@ -55,6 +85,40 @@
                 (val) =>
                   (val && val.length > 8) ||
                   'The password field should be minimum of 8 characters',
+              ]"
+            >
+              <template v-slot:append>
+                <div class="text-center">
+                  <q-icon
+                    @click="passwordVisibility = !passwordVisibility"
+                    v-if="passwordVisibility"
+                    name="visibility"
+                    class="cursor-pointer"
+                  >
+                  </q-icon>
+                  <q-icon
+                    @click="passwordVisibility = !passwordVisibility"
+                    v-else
+                    name="visibility_off"
+                    class="cursor-pointer"
+                  >
+                  </q-icon>
+                  <q-item-label caption dense>Visibility</q-item-label>
+                </div>
+              </template></q-input
+            >
+            <q-input
+              class="col-xs-12 col-sm-12 col-md-12"
+              filled
+              :type="passwordVisibility ? 'text' : 'password'"
+              v-model="form.c_password"
+              label="Re-enter Password"
+              name="password"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'The confirm password field is required',
               ]"
             >
               <template v-slot:append>
@@ -98,12 +162,12 @@
             </div>
             <div>
               <div class="q-mt-md">
-                You don't have an account yet?
+                Already have an account?
                 <router-link
-                  to="/register"
+                  to="/login"
                   class="text-primary"
                   style="text-decoration: none"
-                  >Create One</router-link
+                  >Sign In</router-link
                 >
               </div>
             </div>
@@ -126,36 +190,46 @@ export default {
     const $q = useQuasar();
     const authStore = useAuthStore();
 
-    const email = ref("adeniyi.olamide@lmu.edu.ng");
-    const password = ref("VZCd0Y4yxZtruKL1lUkM6XZ7");
+    const form = ref({
+      firstName: "Olamide",
+      lastName: "Adeniyi",
+      email: "olami04bj@gmail.com",
+      password: null,
+      c_password: null,
+    });
     const passwordVisibility = ref(false);
     const loading = ref(false);
 
     const onSubmit = () => {
-      loading.value = true
+      if (form.value.password !== form.value.c_password) {
+        return $q.notify({
+          message: "The passord must be the same",
+          type: "negative",
+        });
+      }
+      loading.value = true;
       authStore
-        .login({ email: email.value, password: password.value })
+        .register(form.value)
         .then((response) => {
           if (response && response.status) {
             $q.notify({
-              message: "You have successfully logged in!",
+              message: "You have successfully registered! Proceed to login",
               type: "positive",
             });
-            router.push("/dashboard/sessions");
+            router.push("/login");
           }
         })
         .catch((error) => {
-          console.log(error)
           $q.notify({
-            message: error.data.message,
+            message: error.response ? error.response.data.message : error.message,
             type: "negative",
           });
-        }).finally(() => loading.value = false);
+        })
+        .finally(() => (loading.value = false));
     };
 
     return {
-      email,
-      password,
+      form,
       passwordVisibility,
       loading,
       onSubmit,
@@ -167,10 +241,10 @@ export default {
 <style>
 #login-svg {
   height: 350px;
-  max-width: 500px;
+  max-width: 600px;
 }
 
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1000px) {
   #login-svg {
     max-width: 400px;
   }

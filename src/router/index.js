@@ -15,14 +15,13 @@ const routes = [
   },
   {
     path: "/dashboard",
-    // name: 'Dashboard',
     component: () => import("../components/Dashboard/index.vue"),
     meta: { requiresAuth: true },
     children: [
       {
         path: "",
         name: "dashboard_view",
-        component: () => import("../components/Dashboard/dashboard.vue"),
+      redirect: '/dashboard/sessions',
         meta: { requiresAuth: true },
       },
       {

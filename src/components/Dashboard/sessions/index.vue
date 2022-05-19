@@ -5,7 +5,7 @@
       <div
         rounded
         outline
-        class="col-sm-6 col-md-4 session-div"
+        class="col-sm-6 col-md-4 session-div bg-white shadow-10"
         style="max-width: 220px"
         v-for="(session, index) in result.sessions"
         :key="index"
@@ -30,7 +30,7 @@
             <div class="font-bold">
               Status:
               <span v-if="session.isActive" class="text-green">Active</span>
-              <span class="text-grey" v-else>Inactive </span>
+              <span class="text-red" v-else>Inactive </span>
             </div>
           </div>
         </router-link>
@@ -73,7 +73,7 @@ export default {
 
 <style lang="scss" scoped>
 .session-div {
-  border: solid 1px $primary;
+  // border: solid 1px $primary;
   border-radius: 8px;
 }
 </style>
