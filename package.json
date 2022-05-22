@@ -1,5 +1,5 @@
 {
-  "name": "multivote-client",
+  "name": "vote-client",
   "version": "0.1.0",
   "private": true,
   "scripts": {

@@ -3,43 +3,111 @@
     <div class="q-px-md">
       <div class="text-h6">Nominees (Add & Edit)</div>
 
+      <div class="q-pa-sm row wrap q-col-gutter-lg">
+        <div
+          class="col-12 col-md-6"
+          v-for="(nominee, index) in sortWithVotes(nominees)"
+          :key="index"
+          :style="
+            !nominee.is_new && nominee.category.id === category.id
+              ? ''
+              : 'display:none;'
+          "
+        >
+          <div class="row bg-white shadow-10" v-if="!nominee.is_new">
+            <div v-if="nominee.picture_preview" class="col-12 col-md-4">
+              <q-img
+                spinner-color="primary"
+                spinner-size="50px"
+                :src="BACKEND_URL + nominee.picture_preview"
+                alt=""
+                style="max-height: 270px; min-height: 180px"
+                class="q-mr-sm"
+              />
+            </div>
+            <div class="q-pa-sm col-12 col-md-8">
+              <div class="text-h6">
+                <b>{{ nominee.name ? nominee.name.toUpperCase() : "" }}</b>
+              </div>
+              <div class="text-h6">
+                {{ nominee.regno ? nominee.regno : "No Reg No." }}
+              </div>
+              <div class="text-subtitle-1">
+                {{ nominee.department ? nominee.department : "Not specified" }}
+              </div>
+              <div class="text-primary text-subtitle-2 q-mt-sm">
+                {{ nominee.votes }} vote(s)
+              </div>
+              <div class="q-mt-sm">
+                <div>
+                  <q-btn
+                    v-if="!nominee.is_new"
+                    :disabled="nominee.is_new"
+                    label="Update"
+                    color="primary"
+                    class="q-mr-md"
+                    @click="editNominee(nominee.s_n)"
+                  />
+                  <q-btn
+                    v-if="!nominee.is_new"
+                    label="Delete"
+                    color="secondary"
+                    @click="confirmDeleteNominee(nominee.s_n)"
+                  />
+                  <q-btn
+                    v-if="nominee.is_new"
+                    label="Save All"
+                    color="primary"
+                    class="q-mr-md"
+                    @click="saveAddedNominees"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <q-table
-        no-data-label="No nominee has been added"
-        title="Create nominees for the different categories of your voting session"
-        :rows="nominees"
+        class="q-mt-md"
+        no-data-label="No new nominee has been added"
+        :title="`Create nominees for ${
+          category ? category.name.toUpperCase() : ''
+        }`"
+        :rows="filterNominees(nominees)"
         :columns="columns"
         row-key="name"
         :pagination="{ rowsPerPage: 10 }"
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="s_n" :props="props">
-              {{ props.row.s_n }}
-            </q-td>
             <q-td key="name" :props="props">
               <q-input
-                v-if="props.row.is_new"
                 filled
                 :readonly="!props.row.is_new"
                 label="Enter Nominee name"
                 v-model="props.row.name"
               />
-              <div v-else>{{ props.row.name }}</div>
             </q-td>
-            <q-td key="category" :props="props">
-              <q-select
-                v-if="props.row.is_new"
+            <q-td key="name" :props="props">
+              <q-input
+                type="number"
                 filled
-                v-model="props.row.category"
-                :options="categories"
-                option-value="id"
-                option-label="name"
+                :readonly="!props.row.is_new"
+                label="Enter Nominee regno"
+                v-model="props.row.regno"
+              />
+            </q-td>
+            <q-td key="department" :props="props">
+              <q-select
+                filled
+                v-model="props.row.department"
+                :options="departments"
                 :readonly="!props.row.is_new"
                 emit-value
                 map-options
-                label="Category"
+                label="Department"
               />
-              <div v-else>{{ props.row.category.name }}</div>
             </q-td>
             <q-td key="picture" :props="props">
               <q-file
@@ -61,7 +129,11 @@
                 <template v-slot:hint> Upload the nominee picture </template>
               </q-file>
               <div v-else>
-                <q-icon v-if="props.row.picture_preview" name="check" color="green" />
+                <q-icon
+                  v-if="props.row.picture_preview"
+                  name="check"
+                  color="green"
+                />
                 <q-icon v-else name="close" color="red" />
               </div>
             </q-td>
@@ -75,29 +147,6 @@
                   width="70px"
                 />
               </div>
-            </q-td>
-            <q-td key="votes" :props="props">
-              <div>{{ props.row.votes }}</div>
-            </q-td>
-            <q-td key="action" :props="props">
-              <q-btn v-if="!props.row.is_new"
-                :disabled="props.row.is_new"
-                label="Update"
-                color="primary"
-                class="q-mr-md"
-                @click="editNominee(props.row.s_n)"
-              />
-              <q-btn v-if="!props.row.is_new"
-                label="Delete"
-                color="secondary"
-                @click="confirmDeleteNominee(props.row.s_n)"
-              />
-              <q-btn v-if="props.row.is_new"
-                label="Save All"
-                color="primary"
-                class="q-mr-md"
-                @click="saveAddedNominees"
-              />
             </q-td>
           </q-tr>
         </template>
@@ -122,7 +171,7 @@
           color="primary"
         />
         <q-btn
-          label="Save"
+          label="Save for Category"
           class="q-ml-md"
           icon="save"
           type="button"
@@ -175,6 +224,11 @@
             </q-card-section>
 
             <q-card-section class="q-pt-none">
+              <b class="q-mb-sm">{{
+                editNomineeData.category.name.toUpperCase()
+              }}</b>
+              <br /><br />
+
               <q-input
                 filled
                 label="Enter Nominee name"
@@ -183,13 +237,11 @@
               <br />
               <q-select
                 filled
-                v-model="editNomineeData.category"
-                :options="categories"
-                option-value="id"
-                option-label="name"
+                v-model="editNomineeData.department"
+                :options="departments"
                 emit-value
                 map-options
-                label="Category"
+                label="Department"
               />
               <br />
               <q-file
@@ -212,7 +264,7 @@
               <q-img
                 spinner-color="primary"
                 spinner-size="50px"
-                :src="editNomineeData.picture_preview"
+                :src="BACKEND_URL + editNomineeData.picture_preview"
                 alt=""
                 width="150px"
               />
@@ -281,26 +333,20 @@
 
 <script>
 import { useQuasar } from "quasar";
-import { ref, toRefs } from "vue";
+import { ref, watch, toRefs } from "vue";
 import { useNomineeStore } from "@/store/session/nominee";
 import { useRouter } from "vue-router";
+
 export default {
-  props: ["nominees", "sn", "categories"],
+  props: ["nominees", "sn", "categories", "sessionSlug", "category"],
   setup(props) {
+    const BACKEND_URL = process.env.VUE_APP_BACKEND_URL;
     const router = useRouter();
     const $q = useQuasar();
     const nomineeStore = useNomineeStore();
-    const { sn, nominees, categories } = toRefs(props);
+    const { sn, nominees, categories, sessionSlug, category } = toRefs(props);
     const s_n = ref(sn.value);
     const columns = [
-      {
-        name: "s_n",
-        required: true,
-        label: "S/N",
-        align: "left",
-        field: (row) => row.s_n,
-        sortable: true,
-      },
       {
         name: "name",
         align: "center",
@@ -309,75 +355,101 @@ export default {
         sortable: true,
       },
       {
-        name: "category",
+        name: "regno",
         align: "center",
-        label: "Category",
-        field: "categoryId",
+        label: "Reg. No.",
+        field: "regno",
+        sortable: true,
+      },
+      {
+        name: "department",
+        align: "center",
+        label: "Department",
+        field: "department",
+        sortable: true,
       },
       { name: "picture", label: "Picture", field: "picture" },
       { name: "picture_preview", label: "Preview", field: "picture_preview" },
-      { name: "votes", label: "Votes", field: "votes" },
-      { name: "action", label: "Action", field: "action" },
     ];
     const nomineeField = {
-      name: null,
+      name: "",
+      regno: "",
       category: null,
-      picture: null,
+      picture: "",
       is_new: true,
       picture_preview: null,
     };
+    const departments = [
+      "Electrical and Information Engineering",
+      "Mechanical Engineering",
+      "Civil Engineering",
+      "Chemical Engineering",
+      "Agric & Biosystems Engineering",
+    ];
     const addNomineesFieldNumber = ref(1);
     const confirmAddedNominees = ref(false);
     const addedNomineesMessage = ref(false);
     let loading = ref(false);
+
+    watch(nominees, (value) => {
+      props.emit("updateNominees", value);
+    });
+
     const addNomineesField = () => {
       for (let i = 0; i < addNomineesFieldNumber.value; i++) {
         nominees.value.unshift(
-          Object.assign({}, { ...nomineeField, s_n: s_n.value })
+          Object.assign(
+            {},
+            { ...nomineeField, s_n: s_n.value, category: category.value.id }
+          )
         );
         s_n.value++;
       }
     };
     const saveAddedNominees = () => {
       let no_name = 0;
-      let no_category = 0;
+      let no_regno = 0;
       nominees.value.map((nominee) => {
         if (nominee.is_new) {
           if (!nominee.name) no_name++;
-          if (!nominee.category) no_category++;
+          if (!nominee.regno) no_regno++;
         }
       });
       addedNomineesMessage.value = `${
         no_name ? no_name : "No"
       } Nominees found without name and ${
-        no_category ? no_category : "No"
-      } nominees found without category.  <br />
-        Any nominee without category or name will not saved on the server.`;
+        no_regno ? no_regno : "No"
+      } nominees found without regno.  <br />
+        Any nominee without regno or name will not saved on the server.`;
       confirmAddedNominees.value = true;
     };
 
     const createNominees = () => {
       loading.value = true;
-      let nomineesArray = nominees.value.map((a) => {
+      let nomineesArr = nominees.value.map((a) => {
         return { ...a }; // to clone it
       });
-      nomineesArray = nomineesArray.filter(function (el) {
-        return el.is_new && el.name && el.category;
+      console.log(category);
+      nomineesArr = nomineesArr.filter(function (el) {
+        return (
+          el.is_new && el.name && el.regno && el.category === category.value.id
+        );
       });
-      if (!nomineesArray.length) {
+      if (!nomineesArr.length) {
         confirmAddedNominees.value = false;
         loading.value = false;
-        return $q.notify("No new nominees with name and category found!");
+        return $q.notify("No new nominees with name and regno found!");
       }
       var formData = new FormData();
-      nomineesArray.map((nominee) => {
+      nomineesArr.map((nominee) => {
         if (nominee.is_new) {
           formData.append(`image-${nominee.s_n}`, nominee.picture);
         }
         delete nominee.picture;
+        nominee.category = category.value.id;
       });
-      console.log(nomineesArray[0].picture)
-      formData.append("nominees", JSON.stringify(nomineesArray));
+      formData.append("nominees", JSON.stringify(nomineesArr));
+      formData.append("session", sessionSlug.value);
       nomineeStore
         .createMultiple(formData)
         .then((response) => {
@@ -393,7 +465,7 @@ export default {
             });
             setTimeout(() => {
               router.go();
-            }, 3000);
+            }, 1000);
           }
         })
         .catch(() => {
@@ -460,7 +532,9 @@ export default {
           formData.append(`picture`, nominee.picture);
         }
         delete nominee.picture; // Remove picture object from nominee object
-        if (typeof nominee.category == "object") nominee.category = nominee.category.id; // Change category object to its ID
+        delete nominee.votes; // Remove votes from nominee object
+        if (typeof nominee.category == "object")
+          nominee.category = nominee.category.id; // Change category object to its ID
         Object.keys(nominee).forEach((key) => {
           formData.append(key, nominee[key]);
         });
@@ -470,7 +544,11 @@ export default {
           .then((response) => {
             nominees.value[index] = {
               ...nominee,
-              category: findObjectIndex(categories.value, "id", response.data.updatedNominee.category),
+              category: findObjectIndex(
+                categories.value,
+                "id",
+                response.data.updatedNominee.category
+              ),
               picture: response.data.updatedNominee.picture,
               picture_preview: response.data.updatedNominee.picture,
             };
@@ -550,6 +628,20 @@ export default {
       } else return {};
     };
 
+    const filterNominees = (data) => {
+      return data.filter((el) => {
+        if (typeof el.category == "object") {
+          return el.is_new && el.category.id === category.value.id;
+        } else {
+          return el.is_new && el.category === category.value.id;
+        }
+      });
+    };
+
+    const sortWithVotes = (nominees) => {
+      return nominees.sort((a,b) => b.votes - a.votes);
+    }
+
     return {
       loading,
       columns,
@@ -573,6 +665,10 @@ export default {
       isDeleting,
       isUpdating,
       onUpdateImageSelect,
+      BACKEND_URL,
+      filterNominees,
+      departments,
+      sortWithVotes
     };
   },
 };

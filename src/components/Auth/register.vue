@@ -30,36 +30,6 @@
             <q-input
               class="col-xs-12 col-sm-12 col-md-12"
               filled
-              type="text"
-              v-model="form.firstName"
-              label="Your Firstname"
-              name="email"
-              lazy-rules
-              :rules="[
-                (val) =>
-                  (val && val.length > 0) ||
-                  'The firstname field cannot be empty',
-              ]"
-            />
-            <br />
-            <q-input
-              class="col-xs-12 col-sm-12 col-md-12"
-              filled
-              type="text"
-              v-model="form.lastName"
-              label="Your Lastname"
-              name="email"
-              lazy-rules
-              :rules="[
-                (val) =>
-                  (val && val.length > 0) ||
-                  'The lastname field cannot be empty',
-              ]"
-            />
-            <br />
-            <q-input
-              class="col-xs-12 col-sm-12 col-md-12"
-              filled
               type="email"
               v-model="form.email"
               label="Your Email"
@@ -71,76 +41,6 @@
               ]"
             />
             <br />
-            <q-input
-              class="col-xs-12 col-sm-12 col-md-12"
-              filled
-              :type="passwordVisibility ? 'text' : 'password'"
-              v-model="form.password"
-              label="Password"
-              name="password"
-              lazy-rules
-              :rules="[
-                (val) =>
-                  (val && val.length > 0) || 'The password field is required',
-                (val) =>
-                  (val && val.length > 8) ||
-                  'The password field should be minimum of 8 characters',
-              ]"
-            >
-              <template v-slot:append>
-                <div class="text-center">
-                  <q-icon
-                    @click="passwordVisibility = !passwordVisibility"
-                    v-if="passwordVisibility"
-                    name="visibility"
-                    class="cursor-pointer"
-                  >
-                  </q-icon>
-                  <q-icon
-                    @click="passwordVisibility = !passwordVisibility"
-                    v-else
-                    name="visibility_off"
-                    class="cursor-pointer"
-                  >
-                  </q-icon>
-                  <q-item-label caption dense>Visibility</q-item-label>
-                </div>
-              </template></q-input
-            >
-            <q-input
-              class="col-xs-12 col-sm-12 col-md-12"
-              filled
-              :type="passwordVisibility ? 'text' : 'password'"
-              v-model="form.c_password"
-              label="Re-enter Password"
-              name="password"
-              lazy-rules
-              :rules="[
-                (val) =>
-                  (val && val.length > 0) ||
-                  'The confirm password field is required',
-              ]"
-            >
-              <template v-slot:append>
-                <div class="text-center">
-                  <q-icon
-                    @click="passwordVisibility = !passwordVisibility"
-                    v-if="passwordVisibility"
-                    name="visibility"
-                    class="cursor-pointer"
-                  >
-                  </q-icon>
-                  <q-icon
-                    @click="passwordVisibility = !passwordVisibility"
-                    v-else
-                    name="visibility_off"
-                    class="cursor-pointer"
-                  >
-                  </q-icon>
-                  <q-item-label caption dense>Visibility</q-item-label>
-                </div>
-              </template></q-input
-            >
             <div class="q-mt-md col-12">
               <q-btn
                 label="Submit"

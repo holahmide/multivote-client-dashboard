@@ -1,32 +1,34 @@
 <template>
   <div>
-    <div class="q-px-md">
+    <div class="q-px-md q-ma-md">
       <div class="text-h6">Categories (Add & Edit)</div>
       <div class="text-body2">
         Create categories for your voting session e.g
         <code>Best in sports</code>
       </div>
-      <div class="row q-gutter-lg">
-        <q-input
-          class="col-xm-8 col-sm-8 col-md-4 col-lg-4"
-          filled
-          type="text"
-          v-model="newCategory"
-          label="Enter new category"
-          name="category"
-        />
-        <q-btn
-          label="Add"
-          type="button"
-          icon="add"
-          color="primary"
-          @click="addCategory"
-          :disabled="isCreating"
-          :loading="isCreating"
-          ><template v-slot:loading>
-            Creating ...
-            <q-spinner-tail class="on-left" /> </template
-        ></q-btn>
+      <div class="">
+        <q-form class="row" @submit.prevent="addCategory">
+          <q-input
+            class="col-12 q-mb-sm"
+            filled
+            type="text"
+            v-model="newCategory"
+            label="Enter new category"
+            name="category"
+          />
+          <q-btn
+            class="right"
+            label="Add"
+            type="submit"
+            icon="add"
+            color="primary"
+            :disabled="isCreating"
+            :loading="isCreating"
+            ><template v-slot:loading>
+              Creating ...
+              <q-spinner-tail class="on-left" /> </template
+          ></q-btn>
+        </q-form>
       </div>
 
       <div
@@ -189,6 +191,7 @@ export default {
               ...data.createdCategory,
               id: data.createdCategory._id,
             });
+            emit('updateCategories', categories.value);
             newCategory.value = null;
           })
           .catch(() => {
@@ -313,7 +316,7 @@ export default {
               });
             })
             .finally(() => {
-              isUpdating.value = false;
+              isDeleting.value = false;
             });
         }
       }
