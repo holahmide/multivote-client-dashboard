@@ -1,9 +1,9 @@
 module.exports = {
   client: {
     service: {
-      name: "multivote-client",
+      name: "vote-client",
       // URL to the GraphQL API
-      url: "http://127.0.0.1:8000/graphql",
+      url: process.env.VUE_APP_GRAPHQL_ENDPOINT || "http://127.0.0.1:8000/graphql",
     },
     // Files processed by the extension
     includes: ["src/**/*.vue", "src/**/*.js"],
