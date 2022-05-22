@@ -42,7 +42,7 @@
                     class="q-mr-sm"
                     text-color="white"
                     label="Stop"
-                    icon=""
+                    icon="pause"
                   />
                   <q-btn
                     :disabled="isUpdating"
@@ -52,7 +52,7 @@
                     class="q-mr-sm"
                     text-color="white"
                     label="Start"
-                    icon="play"
+                    icon="start"
                   />
                 </div>
                 <div class="col-12 q-px-md">
@@ -370,6 +370,7 @@ export default {
               name
               regno
               votes
+              department
               category {
                 id
                 name
@@ -386,6 +387,7 @@ export default {
     const session = useResult(result, null, (data) => data.sessionBySlug);
 
     watch(session, (value) => {
+      console.log(value.startDate)
       if (!session) return;
       form.value = {
         ...form.value,

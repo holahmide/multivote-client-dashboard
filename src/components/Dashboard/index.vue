@@ -2,8 +2,6 @@
   <q-layout view="lHh lpR fFf">
     <q-header reveal elevated class="bg-grey text-primary q-pl-md q-pr-md">
       <q-toolbar>
-        <!-- <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" /> -->
-
         <q-toolbar-title>
           <img
             src="@/assets/multivote.png"
@@ -52,7 +50,7 @@
             ><q-tooltip> View All sessions </q-tooltip></q-btn>
           </div>
         </router-link>
-        <router-link
+        <!-- <router-link
           style="text-decoration: none; color: inherit"
           :to="{ name: 'profile' }"
           v-slot="{ isExactActive }"
@@ -71,7 +69,7 @@
               icon="person"
             />
           </div>
-        </router-link>
+        </router-link> -->
         <q-btn
           @click="logout"
           color="negative"
@@ -83,14 +81,11 @@
       </q-toolbar>
     </q-header>
 
-    <!--  -->
 
     <q-page-container class="bg-grey" style="min-height: 100vh;">
       <div class="q-pa-md q-ml-lg q-mr-lg" >
         <router-view v-slot="{ Component }">
-          <!-- <keep-alive> -->
             <component :is="Component" />
-          <!-- </keep-alive> -->
         </router-view>
       </div>
     </q-page-container>
@@ -127,7 +122,7 @@ export default {
         })
         .catch((error) => {
           $q.notify({
-            message: error.data.message,
+            message: error.data?.message,
             type: "negative",
           });
         });

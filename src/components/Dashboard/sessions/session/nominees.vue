@@ -6,9 +6,13 @@
       <div class="q-pa-sm row wrap q-col-gutter-lg">
         <div
           class="col-12 col-md-6"
-          v-for="(nominee, index) in nominees"
-          :key="index" 
-          :style="(!nominee.is_new && nominee.category.id === category.id ? '' : 'display:none;')"
+          v-for="(nominee, index) in sortWithVotes(nominees)"
+          :key="index"
+          :style="
+            !nominee.is_new && nominee.category.id === category.id
+              ? ''
+              : 'display:none;'
+          "
         >
           <div class="row bg-white shadow-10" v-if="!nominee.is_new">
             <div v-if="nominee.picture_preview" class="col-12 col-md-4">
@@ -17,9 +21,8 @@
                 spinner-size="50px"
                 :src="BACKEND_URL + nominee.picture_preview"
                 alt=""
-                style="max-height: 250px;min-height:160px"
+                style="max-height: 270px; min-height: 180px"
                 class="q-mr-sm"
-                
               />
             </div>
             <div class="q-pa-sm col-12 col-md-8">
@@ -29,8 +32,11 @@
               <div class="text-h6">
                 {{ nominee.regno ? nominee.regno : "No Reg No." }}
               </div>
+              <div class="text-subtitle-1">
+                {{ nominee.department ? nominee.department : "Not specified" }}
+              </div>
               <div class="text-primary text-subtitle-2 q-mt-sm">
-                {{ nominee.votes ? nominee.votes : "0" }} vote(s)
+                {{ nominee.votes }} vote(s)
               </div>
               <div class="q-mt-sm">
                 <div>
@@ -65,7 +71,9 @@
       <q-table
         class="q-mt-md"
         no-data-label="No new nominee has been added"
-        :title="`Create nominees for ${category ? category.name.toUpperCase() : ''}`"
+        :title="`Create nominees for ${
+          category ? category.name.toUpperCase() : ''
+        }`"
         :rows="filterNominees(nominees)"
         :columns="columns"
         row-key="name"
@@ -88,6 +96,17 @@
                 :readonly="!props.row.is_new"
                 label="Enter Nominee regno"
                 v-model="props.row.regno"
+              />
+            </q-td>
+            <q-td key="department" :props="props">
+              <q-select
+                filled
+                v-model="props.row.department"
+                :options="departments"
+                :readonly="!props.row.is_new"
+                emit-value
+                map-options
+                label="Department"
               />
             </q-td>
             <q-td key="picture" :props="props">
@@ -205,12 +224,24 @@
             </q-card-section>
 
             <q-card-section class="q-pt-none">
-              <b class="q-mb-sm">{{ editNomineeData.category.name.toUpperCase() }}</b> <br /><br />
+              <b class="q-mb-sm">{{
+                editNomineeData.category.name.toUpperCase()
+              }}</b>
+              <br /><br />
 
               <q-input
                 filled
                 label="Enter Nominee name"
                 v-model="editNomineeData.name"
+              />
+              <br />
+              <q-select
+                filled
+                v-model="editNomineeData.department"
+                :options="departments"
+                emit-value
+                map-options
+                label="Department"
               />
               <br />
               <q-file
@@ -330,33 +361,50 @@ export default {
         field: "regno",
         sortable: true,
       },
+      {
+        name: "department",
+        align: "center",
+        label: "Department",
+        field: "department",
+        sortable: true,
+      },
       { name: "picture", label: "Picture", field: "picture" },
       { name: "picture_preview", label: "Preview", field: "picture_preview" },
     ];
     const nomineeField = {
-      name: '',
-      regno: '',
+      name: "",
+      regno: "",
       category: null,
-      picture: '',
+      picture: "",
       is_new: true,
       picture_preview: null,
     };
+    const departments = [
+      "Electrical and Information Engineering",
+      "Mechanical Engineering",
+      "Civil Engineering",
+      "Chemical Engineering",
+      "Agric & Biosystems Engineering",
+    ];
     const addNomineesFieldNumber = ref(1);
     const confirmAddedNominees = ref(false);
     const addedNomineesMessage = ref(false);
     let loading = ref(false);
 
     watch(nominees, (value) => {
-        props.emit('updateNominees', value)
+      props.emit("updateNominees", value);
     });
 
     const addNomineesField = () => {
       for (let i = 0; i < addNomineesFieldNumber.value; i++) {
         nominees.value.unshift(
-          Object.assign({}, { ...nomineeField, s_n: s_n.value, category: category.value.id })
+          Object.assign(
+            {},
+            { ...nomineeField, s_n: s_n.value, category: category.value.id }
+          )
         );
         s_n.value++;
-      } 
+      }
     };
     const saveAddedNominees = () => {
       let no_name = 0;
@@ -367,7 +415,7 @@ export default {
           if (!nominee.regno) no_regno++;
         }
       });
-     addedNomineesMessage.value = `${
+      addedNomineesMessage.value = `${
         no_name ? no_name : "No"
       } Nominees found without name and ${
         no_regno ? no_regno : "No"
@@ -381,9 +429,11 @@ export default {
       let nomineesArr = nominees.value.map((a) => {
         return { ...a }; // to clone it
       });
-      console.log(category)
+      console.log(category);
       nomineesArr = nomineesArr.filter(function (el) {
-        return el.is_new && el.name && el.regno && el.category === category.value.id;
+        return (
+          el.is_new && el.name && el.regno && el.category === category.value.id
+        );
       });
       if (!nomineesArr.length) {
         confirmAddedNominees.value = false;
@@ -580,12 +630,16 @@ export default {
 
     const filterNominees = (data) => {
       return data.filter((el) => {
-        if (typeof el.category == 'object') {
-          return el.is_new && el.category.id === category.value.id
+        if (typeof el.category == "object") {
+          return el.is_new && el.category.id === category.value.id;
         } else {
-          return el.is_new && el.category === category.value.id
+          return el.is_new && el.category === category.value.id;
         }
-      })
+      });
+    };
+
+    const sortWithVotes = (nominees) => {
+      return nominees.sort((a,b) => b.votes - a.votes);
     }
 
     return {
@@ -612,7 +666,9 @@ export default {
       isUpdating,
       onUpdateImageSelect,
       BACKEND_URL,
-      filterNominees
+      filterNominees,
+      departments,
+      sortWithVotes
     };
   },
 };

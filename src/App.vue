@@ -22,7 +22,6 @@ export default {
           .getUser()
           .then(() => {})
           .catch(() => {
-            // if (error.status == 500) {
               $q.notify({
                 message: "Your session has expired! please login again",
                 type: "negative",
@@ -30,7 +29,6 @@ export default {
               authStore.logout().then(() => {
                 router.push("/login");
               })
-            // } else if (error && error.data) $q.notify(error.data.message);
           });
       }
     });

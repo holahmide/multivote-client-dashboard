@@ -68,12 +68,10 @@ export default {
     };
   },
 };
-("2019-02-22 21:02");
 </script>
 
 <style lang="scss" scoped>
 .session-div {
-  // border: solid 1px $primary;
   border-radius: 8px;
 }
 </style>
