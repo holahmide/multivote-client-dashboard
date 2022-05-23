@@ -110,6 +110,7 @@
           </q-form>
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -126,8 +127,8 @@ export default {
     const $q = useQuasar();
     const authStore = useAuthStore();
 
-    const email = ref("adeniyi.olamide@lmu.edu.ng");
-    const password = ref("VZCd0Y4yxZtruKL1lUkM6XZ7");
+    const email = ref("");
+    const password = ref("");
     const passwordVisibility = ref(false);
     const loading = ref(false);
 

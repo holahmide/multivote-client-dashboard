@@ -93,7 +93,7 @@ export default {
     const form = ref({
       firstName: "Olamide",
       lastName: "Adeniyi",
-      email: "olami04bj@gmail.com",
+      email: "",
       password: null,
       c_password: null,
     });
