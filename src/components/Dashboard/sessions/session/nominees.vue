@@ -429,7 +429,6 @@ export default {
       let nomineesArr = nominees.value.map((a) => {
         return { ...a }; // to clone it
       });
-      console.log(category);
       nomineesArr = nomineesArr.filter(function (el) {
         return (
           el.is_new && el.name && el.regno && el.category === category.value.id
@@ -475,7 +474,7 @@ export default {
           });
         })
         .finally(() => {
-          loading = false;
+          loading.value = false;
           confirmAddedNominees.value = false;
         });
     };
@@ -538,7 +537,6 @@ export default {
         Object.keys(nominee).forEach((key) => {
           formData.append(key, nominee[key]);
         });
-        console.log(formData);
         nomineeStore
           .update(nominee.id, formData)
           .then((response) => {

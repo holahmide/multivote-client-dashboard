@@ -53,7 +53,6 @@ export default {
         return api.get(`user/roles_and_permissions/${id}`)
     },
     set_user_roles_and_permissions (payload, id) {
-        console.log(payload.roles)
         return api.post(`user/roles_and_permissions/${id}`, payload)
     }
 }

@@ -387,7 +387,6 @@ export default {
     const session = useResult(result, null, (data) => data.sessionBySlug);
 
     watch(session, (value) => {
-      console.log(value.startDate)
       if (!session) return;
       form.value = {
         ...form.value,

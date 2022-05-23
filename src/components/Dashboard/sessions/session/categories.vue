@@ -250,7 +250,6 @@ export default {
       } else {
         // continue to update on the server
         isUpdating.value = true;
-        console.log(categories.value[index]);
         categoryStore
           .update(categories.value[index].id, category.new)
           .then((response) => {
