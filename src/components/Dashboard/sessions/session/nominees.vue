@@ -48,12 +48,12 @@
                     class="q-mr-md"
                     @click="editNominee(nominee.s_n)"
                   />
-                  <q-btn
+                  <!-- <q-btn
                     v-if="!nominee.is_new"
                     label="Delete"
                     color="secondary"
                     @click="confirmDeleteNominee(nominee.s_n)"
-                  />
+                  /> -->
                   <q-btn
                     v-if="nominee.is_new"
                     label="Save All"
