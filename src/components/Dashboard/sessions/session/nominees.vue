@@ -35,9 +35,9 @@
               <div class="text-subtitle-1">
                 {{ nominee.department ? nominee.department : "Not specified" }}
               </div>
-              <!-- <div class="text-primary text-subtitle-2 q-mt-sm">
+              <div class="text-white text-subtitle-2 q-mt-sm">
                 {{ nominee.votes }} vote(s)
-              </div> -->
+              </div>
               <div class="q-mt-sm">
                 <div>
                   <q-btn
